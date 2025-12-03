@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 )
@@ -12,6 +13,11 @@ func main() {
 	args := os.Args[1:]
 	filename := args[0]
 
+	p1(filename)
+	p2(filename)
+}
+
+func p1(filename string) {
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
@@ -36,6 +42,33 @@ func main() {
 
 	}
 	fmt.Println("maximum joltage is:", joltage)
+}
+
+func p2(filename string) {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("failed to open file: %s", err)
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+
+	joltage := 0
+	n := 12
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		sliceIdx := 0
+		for i := n; i >= 1; i-- {
+			max, maxIdx := findMax(line[sliceIdx : len(line)-i+1])
+			joltage += max * int(math.Pow10(i-1))
+			sliceIdx += maxIdx + 1
+		}
+
+	}
+	fmt.Println("PLUS ULTRA:", joltage)
+
 }
 
 func findMax(line string) (int, int) {
